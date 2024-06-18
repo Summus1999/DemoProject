@@ -2,6 +2,7 @@
 #include <string>
 #include <thread>
 #include <valarray>
+#include <stdexcept>//抛出异常
 using namespace std;
 
 /* 定义常量MALE，表示男性的性别 */
@@ -15,12 +16,12 @@ int main() {
     int studentNumber=0;//学生数量
     int classNumber=3;//课程数量
     bool any_student_failed = false;//是否有学生挂科
-    double variance[classNumber];//课程方差
+    bool continueUsing = true;//是否继续使用标志
     cin >> studentNumber;
     //创建一个学生的结构体，信息有名字，性别，年龄，三门课程成绩
     struct Student {
         string name;//姓名
-        int sex;//性别
+        int sex{};//性别
         int age{};//年龄
         int score[3]{};//成绩,语文，数学，英语
         int sum{};//总成绩
@@ -94,154 +95,161 @@ int main() {
       // 输出学生错误信息
       cout << "There are issues with the entered student information. Please review the errors above." << endl;
     }
-
-    //开始选择使用的功能
-    cout << "please enter the function you want to use!" << endl;
-    cout<<"1.Students search by name"<<endl;//学生按姓名查询功能
-    cout<<"2.Students search by name and gender"<<endl;//学生查询功能（按姓名和性别筛选）
-    cout<<"3.Students search by age"<<endl;//学生按年龄查询功能
-    cout<<"4.Calculate the average score of Chinese class for students"<<endl;//统计学生语文均分
-    cout<<"5.Calculate the average score of Math class for students"<<endl;//统计学生数学均分
-    cout<<"6.Calculate the average score of English class for students"<<endl;//统计学生英语均分
-    cout << "7. Search for failed students" << endl;//查找挂科学生
     int functionChoice;//功能选择
-    cin >> functionChoice;//输入功能选择
-
-
-    switch (functionChoice) {
-        case 1: {
-            // 学生查询功能（按姓名查询）
-            string searchName;
-            cout << "Please enter the student name you want to search: " << endl;//输入学生姓名
-            cin >> searchName;
-            bool found = false;
-            for (int i = 0; i < studentNumber; i++) {
-                if (student[i].name == searchName) {
-                    cout << "Student Found: Name: " << student[i].name
-                         << ", Sex: " << student[i].sex
-                         << ", Age: " << student[i].age
-                         << ", Total Score: " << student[i].sum
-                         << ", Fail: " << (student[i].fail ? "Yes" : "No") << endl;
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) cout << "Student not found." << endl;//未找到学生
+    while (continueUsing)
+    {
+      cout << "please enter the function you want to use!(Enter a number outside 1-7 to exit)" << endl;//输入功能选择
+      cin >> functionChoice;//输入功能选择
+      //开始选择使用的功能
+      cout << "please enter the function you want to use!" << endl;
+      cout<<"1.Students search by name"<<endl;//学生按姓名查询功能
+      cout<<"2.Students search by name and gender"<<endl;//学生查询功能（按姓名和性别筛选）
+      cout<<"3.Students search by age"<<endl;//学生按年龄查询功能
+      cout<<"4.Calculate the average score of Chinese class for students"<<endl;//统计学生语文均分
+      cout<<"5.Calculate the average score of Math class for students"<<endl;//统计学生数学均分
+      cout<<"6.Calculate the average score of English class for students"<<endl;//统计学生英语均分
+      cout<<"7.Search for failed students" << endl;//查找挂科学生
+      switch (functionChoice){
+      case 1: {
+        // 学生查询功能（按姓名查询）
+        string searchName;
+        cout << "Please enter the student name you want to search: " << endl;//输入学生姓名
+        cin >> searchName;
+        bool found = false;
+        for (int i = 0; i < studentNumber; i++) {
+          if (student[i].name == searchName) {
+            cout << "Student Found: Name: " << student[i].name
+                 << ", Sex: " << student[i].sex
+                 << ", Age: " << student[i].age
+                 << ", Total Score: " << student[i].sum
+                 << ", Fail: " << (student[i].fail ? "Yes" : "No") << endl;
+            found = true;
             break;
+          }
         }
-        case 2: {
-            // 学生查询功能（按姓名和性别筛选）
-            string searchName;
-            int searchSex;
-            cout << "Please enter the student name you want to search: " << endl;
-            cin >> searchName;
-            cout << "Please enter the gender you want to filter (M/F): " << endl;
-            cin >> searchSex;
-            bool found = false;
-            for (int i = 0; i < studentNumber; i++) {
-                if (student[i].name == searchName && student[i].sex == searchSex) {
-                    cout << "Student Found: Name: " << student[i].name
-                         << ", Sex: " << student[i].sex
-                         << ", Age: " << student[i].age
-                         << ", Total Score: " << student[i].sum
-                         << ", Fail: " << (student[i].fail ? "Yes" : "No") << endl;
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) cout << "Student not found." << endl;
+        if (!found) cout << "Student not found." << endl;//未找到学生
+        break;
+      }
+      case 2: {
+        // 学生查询功能（按姓名和性别筛选）
+        string searchName;
+        int searchSex;
+        cout << "Please enter the student name you want to search: " << endl;
+        cin >> searchName;
+        cout << "Please enter the gender you want to filter (M/F): " << endl;
+        cin >> searchSex;
+        bool found = false;
+        for (int i = 0; i < studentNumber; i++) {
+          if (student[i].name == searchName && student[i].sex == searchSex) {
+            cout << "Student Found: Name: " << student[i].name
+                 << ", Sex: " << student[i].sex
+                 << ", Age: " << student[i].age
+                 << ", Total Score: " << student[i].sum
+                 << ", Fail: " << (student[i].fail ? "Yes" : "No") << endl;
+            found = true;
             break;
+          }
         }
-        case 3: {
-            // 学生查询功能（按年龄筛选）
-            int searchAge;
-            cout << "Please enter the age you want to filter: " << endl;//输入筛选的学生的年龄
-            cin >> searchAge;
-            bool found = false;
-            cout << "Students Found with Age " << searchAge << ":" << endl;
-            for (int i = 0; i < studentNumber; i++) {
-                if (student[i].age == searchAge) {
-                    cout << "Name: " << student[i].name
-                         << ", Sex: " << student[i].sex
-                         << ", Age: " << student[i].age
-                         << ", Total Score: " << student[i].sum
-                         << ", Fail: " << (student[i].fail ? "Yes" : "No") << endl;
-                    found = true;
-                }
-            }
-            if (!found) cout << "No students found at this age." << endl;//未找到符合条件的学生
-            break;
+        if (!found) cout << "Student not found." << endl;
+        break;
+      }
+      case 3: {
+        // 学生查询功能（按年龄筛选）
+        int searchAge;
+        cout << "Please enter the age you want to filter: " << endl;//输入筛选的学生的年龄
+        cin >> searchAge;
+        bool found = false;
+        cout << "Students Found with Age " << searchAge << ":" << endl;
+        for (int i = 0; i < studentNumber; i++) {
+          if (student[i].age == searchAge) {
+            cout << "Name: " << student[i].name
+                 << ", Sex: " << student[i].sex
+                 << ", Age: " << student[i].age
+                 << ", Total Score: " << student[i].sum
+                 << ", Fail: " << (student[i].fail ? "Yes" : "No") << endl;
+            found = true;
+          }
         }
-        case 4: {
-            // 计算语文均分和方差
-            int chineseTotal = 0;
-            for (int i = 0; i < studentNumber; i++) {
-                chineseTotal += student[i].score[0]; // 语文是第一门课
-            }
-            double chineseAverage = static_cast<double>(chineseTotal) / studentNumber;
-            cout << "Average score of Chinese: " << chineseAverage << endl;//输出语文均分
-            double chineseVariance = 0.0;//语文方差
-            for (int i = 0; i < studentNumber; i++) {
-              chineseVariance += pow(student[i].score[0] - chineseAverage, 2);
-            }
-            chineseVariance /= studentNumber;
-            cout << "Variance of Chinese scores: " << chineseVariance << endl;//输出语文方差
-            break;
+        if (!found) cout << "No students found at this age." << endl;//未找到符合条件的学生
+        break;
+      }
+      case 4: {
+        // 计算语文均分和方差
+        int chineseTotal = 0;
+        for (int i = 0; i < studentNumber; i++) {
+          chineseTotal += student[i].score[0]; // 语文是第一门课
         }
-        case 5: {
-            // 计算数学均分
-            int mathTotal = 0;
-            for (int i = 0; i < studentNumber; i++) {
-                mathTotal += student[i].score[1]; // 数学是第二门课
-            }
-            double mathAverage = static_cast<double>(mathTotal) / studentNumber;
-            cout << "Average score of Math: " << mathAverage << endl;//输出数学均分
-            double mathVariance = 0.0;//数学方差
-            for (int i = 0; i < studentNumber; i++) {
-              mathVariance += pow(student[i].score[1] - mathAverage, 2);
-            }
-            mathVariance /= studentNumber;
-            cout << "Variance of Math scores: " << mathVariance << endl;//输出数学方差
-            break;
+        double chineseAverage = static_cast<double>(chineseTotal) / studentNumber;
+        cout << "Average score of Chinese: " << chineseAverage << endl;//输出语文均分
+        double chineseVariance = 0.0;//语文方差
+        for (int i = 0; i < studentNumber; i++) {
+          chineseVariance += pow(student[i].score[0] - chineseAverage, 2);
         }
-        case 6: {
-            // 计算英语均分
-            int englishTotal = 0;
-            for (int i = 0; i < studentNumber; i++) {
-                englishTotal += student[i].score[1]; // 数学是第二门课
-            }
-            double englishAverage = static_cast<double>(englishTotal) / studentNumber;
-            cout << "Average score of English: " << englishAverage << endl;//输出英语均分
-            double englishVariance = 0.0;//英语方差
-            for (int i = 0; i < studentNumber; i++) {
-              englishVariance += pow(student[i].score[2] - englishAverage, 2);
-            }
-            englishVariance /= studentNumber;
-            cout << "Variance of English scores: " << englishVariance << endl;//输出英语方差
-            break;
+        chineseVariance /= studentNumber;
+        cout << "Variance of Chinese scores: " << chineseVariance << endl;//输出语文方差
+        break;
+      }
+      case 5: {
+        // 计算数学均分
+        int mathTotal = 0;
+        for (int i = 0; i < studentNumber; i++) {
+          mathTotal += student[i].score[1]; // 数学是第二门课
         }
-        case 7: {
-            // 统计挂科学生
-            cout << "Failed Students:" << endl;
-            for (int i = 0; i < studentNumber; i++) {
-                if (student[i].fail) {
-                    cout << "Name: " << student[i].name
-                         << ", Sex: " << student[i].sex
-                         << ", Age: " << student[i].age
-                         << ", Total Score: " << student[i].sum
-                         << endl;
-                }
-            }
-            if (!any_student_failed) cout << "No failed students." << endl; // 如果没有挂科学生
-            break;
+        double mathAverage = static_cast<double>(mathTotal) / studentNumber;
+        cout << "Average score of Math: " << mathAverage << endl;//输出数学均分
+        double mathVariance = 0.0;//数学方差
+        for (int i = 0; i < studentNumber; i++) {
+          mathVariance += pow(student[i].score[1] - mathAverage, 2);
         }
-        default:
-            cout << "Please enter the correct function!" << endl;//输入错误
-            break;
+        mathVariance /= studentNumber;
+        cout << "Variance of Math scores: " << mathVariance << endl;//输出数学方差
+        break;
+      }
+      case 6: {
+        // 计算英语均分
+        int englishTotal = 0;
+        for (int i = 0; i < studentNumber; i++) {
+          englishTotal += student[i].score[1]; // 数学是第二门课
+        }
+        double englishAverage = static_cast<double>(englishTotal) / studentNumber;
+        cout << "Average score of English: " << englishAverage << endl;//输出英语均分
+        double englishVariance = 0.0;//英语方差
+        for (int i = 0; i < studentNumber; i++) {
+          englishVariance += pow(student[i].score[2] - englishAverage, 2);
+        }
+        englishVariance /= studentNumber;
+        cout << "Variance of English scores: " << englishVariance << endl;//输出英语方差
+        break;
+      }
+      case 7: {
+        // 统计挂科学生
+        cout << "Failed Students:" << endl;
+        for (int i = 0; i < studentNumber; i++) {
+          if (student[i].fail) {
+            cout << "Name: " << student[i].name
+                 << ", Sex: " << student[i].sex
+                 << ", Age: " << student[i].age
+                 << ", Total Score: " << student[i].sum
+                 << endl;
+          }
+        }
+        if (!any_student_failed) cout << "No failed students." << endl; // 如果没有挂科学生
+        break;
+      }
+      default:
+        cout << "Please enter the correct function!" << endl;//输入错误
+        break;
+      }
+      char choice;
+      cout << "Do you want to continue using other functions? (Y/N): ";
+      cin >> choice;
+      if (choice != 'Y' && choice != 'y') {
+        cout << "Looking forward to your next use!" << endl;//退出循环
+        continueUsing = false; // 用户选择不继续，则设置标记为false
+        break;
+      }
     }
-    cout << "calculate the variance!" << endl;//计算方差
-
-    cout << "Thank you for using my student system!" << endl;//程序结束
-    std::this_thread::sleep_for(std::chrono::seconds(2000)); // 延时2000秒
+    cout << "System is over.Thank you for using my student system!" << endl;//程序结束
+    std::this_thread::sleep_for(std::chrono::seconds(20)); // 延时20秒
     return 0;
 }
